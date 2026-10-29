@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's Your Next Move</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: one narrow centred column (max 560px), one screen at a time, mobile first. */
+:root {
+  --bg: #FFFFFF;
+  --fg: #000000;
+  --muted: #4d483f;
+  --accent: #BEAD9E;
+  --tint: #F4F1EC;
+  --btn-bg: #000000;
+  --btn-fg: #FFFFFF;
+  --warn-bg: #FFF4D6;
+  --warn-fg: #4a3500;
+  --font-head: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Open Sans", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --fg: #FFFFFF; --muted: #cfc7bb; --tint: #15130f;
+    --btn-bg: #BEAD9E; --btn-fg: #000000; --warn-bg: #2b2204; --warn-fg: #ffe9a8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --fg: #FFFFFF; --muted: #cfc7bb; --tint: #15130f;
+  --btn-bg: #BEAD9E; --btn-fg: #000000; --warn-bg: #2b2204; --warn-fg: #ffe9a8;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.brand {
+  font-family: var(--font-head); font-weight: 600; font-size: 12px;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
+}
+h1, h2, h3 { font-family: var(--font-head); line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: 34px; font-weight: 700; }
+h2 { font-size: 24px; font-weight: 600; }
+h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+p { margin: 0; }
+.sub { font-size: 20px; color: var(--fg); }
+.muted { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.rule { height: 3px; width: 56px; background: var(--accent); border: 0; margin: 0; }
+
+.btn {
+  font-family: var(--font-head); font-weight: 600; font-size: 15px;
+  letter-spacing: 0.08em; text-transform: uppercase; text-align: center; text-decoration: none;
+  min-height: 52px; padding: 14px 22px; border-radius: 4px; cursor: pointer;
+  background: var(--btn-bg); color: var(--btn-fg); border: 2px solid var(--btn-bg);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--accent); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+.btn:focus-visible, .opt:focus-visible, input:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+
+.progress { display: flex; flex-direction: column; gap: 8px; }
+.progress-top { display: flex; justify-content: space-between; font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; }
+.track { height: 6px; background: var(--tint); border: 1px solid var(--accent); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; background: var(--accent); }
+
+.opts { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; }
+.opt {
+  font: inherit; text-align: left; width: 100%; min-height: 60px; padding: 14px 16px;
+  background: transparent; color: var(--fg); border: 2px solid var(--accent); border-radius: 4px; cursor: pointer;
+}
+.opt[aria-checked="true"] { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.nav { display: flex; gap: 12px; }
+.nav .btn { flex: 1; }
+.nav .btn.ghost { flex: 0 0 34%; }
+
+.card { background: var(--tint); border: 2px solid var(--accent); border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+.badge {
+  align-self: flex-start; font-family: var(--font-head); font-weight: 700; font-size: 12px;
+  letter-spacing: 0.2em; background: var(--accent); color: #000; padding: 6px 12px; border-radius: 3px;
+}
+.block { display: flex; flex-direction: column; gap: 6px; }
+.invite { border-top: 3px solid var(--accent); padding-top: 24px; display: flex; flex-direction: column; gap: 20px; }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; }
+dt { font-family: var(--font-head); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 3px; }
+dd { margin: 0; min-width: 0; }
+.days { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.days li { display: flex; flex-direction: column; }
+.days b { font-family: var(--font-head); font-weight: 700; font-size: 14px; letter-spacing: 0.1em; }
+.note { background: var(--warn-bg); color: var(--warn-fg); padding: 12px 14px; border-radius: 4px; font-size: 14px; }
+.small { font-size: 14px; }
+form { display: flex; flex-direction: column; gap: 12px; }
+label { font-weight: 600; }
+.paybox, .interest { border-top: 3px solid var(--accent); padding-top: 24px; }
+.pay { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.payopt { border: 2px solid var(--accent); border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.price { font-family: var(--font-head); font-weight: 700; font-size: 30px; line-height: 1.1; }
+input[type="email"], input[type="text"] { font: inherit; padding: 12px 14px; min-height: 50px; border: 2px solid var(--accent); border-radius: 4px; background: var(--bg); color: var(--fg); width: 100%; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 14px; }
+.check input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+.linkbtn { background: none; border: 0; color: var(--fg); font: inherit; text-decoration: underline; cursor: pointer; padding: 8px 0; align-self: flex-start; }
+@media (prefers-reduced-motion: no-preference) { .fill { transition: width 0.2s ease; } }
+body{margin:0}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app" aria-live="polite"></div>
+
+<script>
+/* ================== OWNER SETTINGS: edit only this block ==================
+   1) BOOTCAMP_URL: paste your existing Bootcamp landing page (must start with https://).
+      Until then the button stays switched off and a setup note shows on the result screen.
+   2) PAY_NGN_URL / PAY_USD_URL: your Flutterwave payment links. A button only works when its
+      link starts with https://, otherwise it shows as switched off.
+   3) FORMSPREE_ENDPOINT: the form address for the optional "express interest" form. */
+const BOOTCAMP_URL = "bootcamp.html";
+const PAY_NGN_URL = "https://flutterwave.com/pay/rv0hbcii2bni";
+const PAY_USD_URL = "https://flutterwave.com/pay/sjhl9d8nmmba";
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/maeejjzk";
+/* =========================================================================== */
+
+/*SCORING-START*/
+const QUESTIONS = [
+  { q: "Where are you right now?", w: 1, o: [
+    ["I'm navigating a transition and trying to figure out what comes next.", "DISCOVER"],
+    ["I want to start a business, but I'm unsure what to build.", "BUILD"],
+    ["I already have a business, but I'm considering a new direction.", "BUILD"],
+    ["I have skills, knowledge or experience, but I'm unsure how to turn them into an income-generating offer.", "BECOME"] ] },
+  { q: "When you think about what you could build, what is your biggest challenge?", w: 2, o: [
+    ["I don't know what I have that people would find valuable.", "DISCOVER"],
+    ["I have several ideas, but I don't know which one to focus on.", "BUILD"],
+    ["I know what I'm good at, but I don't know who needs it or how to communicate its value.", "BUILD"],
+    ["I have an idea, but I struggle to take action and move forward.", "BECOME"] ] },
+  { q: "Which statement best describes how you see your skills, knowledge and experience?", w: 1, o: [
+    ["I haven't really thought about how they could help someone else.", "DISCOVER"],
+    ["I know I have valuable things to offer, but I struggle to see how they fit together.", "DISCOVER"],
+    ["I can see how I might help people, but I haven't clarified exactly who I want to help.", "BUILD"],
+    ["I know what I can offer, but I need to turn it into something people can understand and pay for.", "BECOME"] ] },
+  { q: "What would you most need help with right now?", w: 2, o: [
+    ["Recognising and valuing what I already carry.", "DISCOVER"],
+    ["Connecting what I know or can do to a real problem people need solved.", "BUILD"],
+    ["Clarifying an offer and explaining why it matters to the right people.", "BUILD"],
+    ["Taking practical steps to begin building and sharing my offer.", "BECOME"] ] },
+  { q: "What would make the biggest difference to you right now?", w: 2, o: [
+    ["Clarity about what I already have to build from.", "DISCOVER"],
+    ["A clearer direction for what I could build and who I could help.", "BUILD"],
+    ["A practical way to turn my strengths and experience into an offer.", "BECOME"],
+    ["A clear next step and the confidence to begin taking action.", "BECOME"] ] }
+];
+/* Scoring: Q2, Q4 and Q5 are worth 2 points each, Q1 and Q3 worth 1 point (8 in total).
+   The category with the most points wins. If two categories tie, the tie goes to the
+   category chosen on Q4, then Q5, then Q2, then Q3, then Q1. */
+const TIE_ORDER = [3, 4, 1, 2, 0];
+function scoreQuiz(answers) {
+  const t = { DISCOVER: 0, BUILD: 0, BECOME: 0 };
+  answers.forEach((a, i) => { t[QUESTIONS[i].o[a][1]] += QUESTIONS[i].w; });
+  const max = Math.max(t.DISCOVER, t.BUILD, t.BECOME);
+  const tied = Object.keys(t).filter(k => t[k] === max);
+  if (tied.length === 1) return tied[0];
+  for (const qi of TIE_ORDER) {
+    const c = QUESTIONS[qi].o[answers[qi]][1];
+    if (tied.includes(c)) return c;
+  }
+  return tied[0];
+}
+/*SCORING-END*/
+
+const RESULTS = {
+  DISCOVER: {
+    badge: "DISCOVER", title: "Recognise What You Carry",
+    why: "Your answers suggest you may be so close to your own experience that it is hard to see its value from the outside. That is very common, especially in a season of change. What feels ordinary to you may be exactly what someone else is looking for.",
+    focus: "Seeing and valuing what you already carry, before deciding what to build.",
+    step: "Write down three things people regularly ask you for help with, thank you for, or say you make look easy. Don't judge them. Just list them.",
+    help: "Day 1 of the Bootcamp is built for this stage. You get guided time to recognise and value your gift, so Days 2 and 3 rest on something solid.",
+    invite: "Since your focus is recognising what you carry, Day 1 is where you may get the most. You don't need a business idea to join."
+  },
+  BUILD: {
+    badge: "BUILD", title: "Connect Your Gift to a Real Need",
+    why: "Your answers suggest you already sense you have something to offer. What may be missing is the link between what you can do and the people and problems it could serve. Ideas feel scattered until they are tied to a real need.",
+    focus: "Connecting what you know and can do to people who need it, and saying clearly why it matters.",
+    step: "Think of one person who is struggling with something you have already worked through. In one sentence, describe their problem and what would change for them if it were solved.",
+    help: "Day 2 of the Bootcamp focuses on exactly this. You connect your gift to people, problems and the transformation you can help bring about.",
+    invite: "Since your focus is connecting your gift to a real need, Day 2 is where you may get the most. You can bring several ideas and work out where to start."
+  },
+  BECOME: {
+    badge: "BECOME", title: "Turn Clarity into Action",
+    why: "Your answers suggest you know more about what you offer than you may be giving yourself credit for. The next gap is less about clarity and more about movement: taking visible steps so your offer can start meeting real people.",
+    focus: "Moving from knowing what you could do to taking practical steps and sharing it.",
+    step: "Choose one small action you can finish in the next 48 hours, such as telling one person, in a single sentence, who you help and how. Do it before you perfect anything.",
+    help: "Day 3 of the Bootcamp is about action. You leave with practical steps and the confidence to begin moving forward.",
+    invite: "Since your focus is moving into action, Day 3 is where you may get the most. You'll finish with practical next steps you can begin straight away."
+  }
+};
+
+const LS_KEY = "wynm-quiz-v1";
+let state = { step: 0, answers: [null, null, null, null, null] };
+try {
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  if (saved && Array.isArray(saved.answers) && saved.answers.length === 5 &&
+      saved.answers.every(a => a === null || (Number.isInteger(a) && a >= 0 && a <= 3)) &&
+      Number.isInteger(saved.step) && saved.step >= 0 && saved.step <= 6) {
+    state = saved;
+    if (state.step === 6 && state.answers.some(a => a === null)) state.step = 1;
+  }
+} catch (e) {}
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const isUrl = u => /^(https:\/\/|[\w.-]+\.html$)\S*$/.test(String(u).trim());
+const urlOk = isUrl(BOOTCAMP_URL);
+const brand = '<div class="brand">Beegozzihub</div>';
+
+function go(step) { state.step = step; save(); render(); window.scrollTo(0, 0); }
+
+function renderIntro() {
+  const resume = state.answers.some(a => a !== null);
+  app.innerHTML = brand + `
+    <div class="stack">
+      <h1>What's Your Next Move?</h1>
+      <p class="sub">You may have more to build from than you realise.</p>
+      <hr class="rule">
+      <p>Answer five quick questions to discover what you may need to focus on next as you navigate your transition and consider what you can build from what you already carry.</p>
+      <p class="muted">There are no right or wrong answers. It takes about two minutes.</p>
+    </div>
+    <div class="nav"><button class="btn" id="start">${resume ? "Continue the quiz" : "Start the quiz"}</button></div>
+    ${resume ? '<button class="linkbtn" id="restart">Start over</button>' : ""}`;
+  document.getElementById("start").onclick = () => {
+    const firstOpen = state.answers.findIndex(a => a === null);
+    go(firstOpen === -1 ? 5 : firstOpen + 1);
+  };
+  const r = document.getElementById("restart");
+  if (r) r.onclick = () => { state.answers = [null, null, null, null, null]; go(0); };
+}
+
+function renderQuestion() {
+  const i = state.step - 1, q = QUESTIONS[i], sel = state.answers[i];
+  const pct = (i / 5) * 100;
+  app.innerHTML = brand + `
+    <div class="progress">
+      <div class="progress-top"><span>Question ${i + 1} of 5</span><span>${Math.round(pct)}%</span></div>
+      <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="${i}" aria-label="Quiz progress"><div class="fill" style="width:${pct}%"></div></div>
+    </div>
+    <h2 id="qh">${esc(q.q)}</h2>
+    <div class="opts" role="radiogroup" aria-labelledby="qh">
+      ${q.o.map((o, k) => `<button class="opt" role="radio" aria-checked="${sel === k}" data-k="${k}">${esc(o[0])}</button>`).join("")}
+    </div>
+    <div class="nav">
+      <button class="btn ghost" id="back">Back</button>
+      <button class="btn" id="next" ${sel === null ? "disabled" : ""}>${i === 4 ? "See my result" : "Next"}</button>
+    </div>`;
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    state.answers[i] = Number(b.dataset.k); save();
+    app.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-checked", String(x === b)));
+    document.getElementById("next").disabled = false;
+  });
+  document.getElementById("back").onclick = () => go(state.step - 1);
+  document.getElementById("next").onclick = () => { if (state.answers[i] !== null) go(state.step + 1); };
+}
+
+function renderResult() {
+  const key = scoreQuiz(state.answers), r = RESULTS[key];
+  const cta = urlOk
+    ? `<a class="btn" href="${esc(BOOTCAMP_URL.trim())}" target="_blank" rel="noopener">EXPLORE THE BOOTCAMP</a>`
+    : `<span class="btn" aria-disabled="true">EXPLORE THE BOOTCAMP</span>
+       <p class="note"><b>Owner setup needed:</b> add your Bootcamp landing-page URL to BOOTCAMP_URL at the top of the script. This note and the disabled button go away once a valid https:// link is added.</p>`;
+  const payBtn = (url, label) => isUrl(url)
+    ? `<a class="btn" href="${esc(url.trim())}" target="_blank" rel="noopener">${label}</a>`
+    : `<span class="btn" aria-disabled="true">${label}</span>`;
+  const payMissing = !isUrl(PAY_NGN_URL) || !isUrl(PAY_USD_URL)
+    ? `<p class="note"><b>Owner setup needed:</b> a payment link is missing. Add it at the top of the script.</p>` : "";
+  const interest = `
+    <div class="stack interest">
+      <h2>Prefer a follow-up?</h2>
+      <p>If you'd like me to contact you about the Bootcamp, leave your details below. This only tells me you're interested. It is not a registration and it does not take payment.</p>
+      <form id="iform" novalidate>
+        <label for="nm">Name</label>
+        <input type="text" id="nm" autocomplete="name" required>
+        <label for="em">Email address</label>
+        <input type="email" id="em" autocomplete="email" inputmode="email" required>
+        <label class="check" for="cs"><input type="checkbox" id="cs" required> <span>Yes, I'd like Ngozi to contact me about the Build From Your Gift Bootcamp.</span></label>
+        <button class="btn ghost" type="submit" id="isub">I'M INTERESTED IN THE BOOTCAMP</button>
+        <p class="small" id="imsg" role="status"></p>
+      </form>
+      <p class="small muted">Privacy: we use your name and email only to contact you about the Bootcamp. We collect nothing else, and you can ask to be removed at any time.</p>
+    </div>`;
+  app.innerHTML = brand + `
+    <div class="card">
+      <span class="badge">${r.badge}</span>
+      <h1>${esc(r.title)}</h1>
+      <p>${esc(r.why)}</p>
+      <div class="block"><h3>Your focus</h3><p>${esc(r.focus)}</p></div>
+      <div class="block"><h3>One practical next step</h3><p>${esc(r.step)}</p></div>
+      <div class="block"><h3>How the Bootcamp may help</h3><p>${esc(r.help)}</p></div>
+      <p class="small muted">This is a reflection based on how you answered today, not a test or a permanent label. Your answers can change as you do.</p>
+    </div>
+    <div class="invite">
+      <h2>3-Day Build From Your Gift Bootcamp</h2>
+      <p>A practical three-day Bootcamp to help you recognise what you carry, connect your gift to people, problems and transformation, and begin taking action.</p>
+      <p>${esc(r.invite)}</p>
+      <dl>
+        <dt>Date</dt><dd>Wednesday, November 11, 2026</dd>
+        <dt>Time</dt><dd>12 PM EST / 6 PM WAT</dd>
+        <dt>Price</dt><dd>₦20,000 or $17, depending on the payment method you select</dd>
+      </dl>
+      <ul class="days">
+        <li><b>DAY 1 — DISCOVER</b><span>Recognise what you carry.</span></li>
+        <li><b>DAY 2 — BUILD</b><span>Connect your gift to people, problems and transformation.</span></li>
+        <li><b>DAY 3 — BECOME</b><span>Take action and begin moving forward.</span></li>
+      </ul>
+      <p class="small muted">The Bootcamp is a guided space to do the work. Results depend on the action you take.</p>
+      ${cta}
+    </div>
+    <div class="stack paybox">
+      <h2>CHOOSE YOUR PAYMENT METHOD</h2>
+      <p class="small muted">Ready to register? Choose the option that suits you. Payment opens in a new tab.</p>
+      <div class="pay">
+        <div class="payopt"><h3>OPTION 1</h3><p class="price">₦20,000</p>${payBtn(PAY_NGN_URL, "PAY ₦20,000")}</div>
+        <div class="payopt"><h3>OPTION 2</h3><p class="price">$17</p>${payBtn(PAY_USD_URL, "PAY $17")}</div>
+      </div>
+      ${payMissing}
+    </div>
+    ${interest}
+    <div class="nav"><button class="btn ghost" id="back">Back</button></div>
+    <button class="linkbtn" id="retake">Retake the quiz</button>`;
+  document.getElementById("back").onclick = () => go(5);
+  document.getElementById("retake").onclick = () => { state.answers = [null, null, null, null, null]; go(0); };
+  const f = document.getElementById("iform");
+  let sending = false, done = false;
+  f.onsubmit = async ev => {
+    ev.preventDefault();
+    if (sending || done) return;
+    const nm = document.getElementById("nm").value.trim(), em = document.getElementById("em").value.trim();
+    const cs = document.getElementById("cs").checked, msg = document.getElementById("imsg"), btn = document.getElementById("isub");
+    if (!nm) { msg.textContent = "Please enter your name."; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { msg.textContent = "Please enter a valid email address."; return; }
+    if (!cs) { msg.textContent = "Please tick the box so I know you're happy to be contacted."; return; }
+    sending = true; btn.disabled = true; msg.textContent = "Sending…";
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ name: nm, email: em,
+          consent: "Yes, I'd like Ngozi to contact me about the Build From Your Gift Bootcamp.",
+          quizResult: key, _subject: "Bootcamp interest: " + nm + " (" + key + ")" }) });
+      if (!res.ok) throw new Error("status " + res.status);
+      done = true;
+      msg.textContent = "Thank you, " + nm + ". Your interest has been received and I'll be in touch. This is not a registration, so use the payment options above when you're ready to join.";
+    } catch (e) {
+      msg.textContent = "Sorry, that didn't go through. Please check your connection and try again.";
+      btn.disabled = false;
+    } finally { sending = false; }
+  };
+}
+
+function render() {
+  if (state.step === 0) renderIntro();
+  else if (state.step <= 5) renderQuestion();
+  else renderResult();
+}
+render();
+</script>
+
+</body>
+</html>
